@@ -1,9 +1,9 @@
 <!DOCTYPE html> 
 <html> 
 <head> 
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js" type="text/javascript" charset="utf-8"></script>
   
-  <script src="../jquery.modal.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../jquery.modal.js" type="text/javascript" charset="utf-8"></script>
   <link rel="stylesheet" href="../jquery.modal.css" type="text/css" media="screen" />
   
   <script src="highlight/highlight.pack.js" type="text/javascript" charset="utf-8"></script>
@@ -76,8 +76,6 @@
 </ul>
 
 
-
-
     
 <hr />
 
@@ -114,8 +112,7 @@
 <div class="modal" id="ex1" style="display:none;">
   <p>Thanks for clicking.  That felt good.  <br />Click <a href="#" rel="modal:close">close</a>, click the overlay, or press ESC</p>
 </div>
-  
-  
+
 <hr />
 
 <h2>Example 2: styled login form &amp; events</h2>
@@ -181,10 +178,12 @@ $('#manual-ajax').click(function(event) {
 <div id="ex5" class="modal">
   <p>If you do this, be sure to provide the user with an alternate method of <a href="#" rel="modal:close">closing the window.</a></p>
 </div>
-  
+
+<script src="../jquery.transit.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
   $(function() {
-    
+    $.cssEase['bounce'] = 'cubic-bezier(0.175, 0.885, 0.320, 1.275)';
+
     function log_modal_event(event, modal) {
       if(typeof console != 'undefined' && console.log) console.log("[event] " + event.type);
     };
@@ -198,6 +197,18 @@ $('#manual-ajax').click(function(event) {
     $(document).on($.modal.AJAX_SEND, log_modal_event);
     $(document).on($.modal.AJAX_SUCCESS, log_modal_event);
     $(document).on($.modal.AJAX_COMPLETE, log_modal_event);
+
+    $(document).on($.modal.BLOCK, function(e, m){
+      $(m.blocker[0]).hide().fadeIn(200);
+    });
+
+    $(document).on($.modal.BEFORE_OPEN, function(e, m){
+      $(m.elm[0]).css({scale: 0.7}).transit({scale: 1}, 200, 'bounce');
+    });
+    $(document).on($.modal.BEFORE_CLOSE, function(e, m){
+      $(m.elm[0]).clone().appendTo($(m.elm[0]).parent())
+      .transit({scale: 0.8, opacity: 0}, 200, function() { this.remove(); });
+    });
     
     $('#more').click(function() {
       $(this).parent().after($(this).parent().next().clone());

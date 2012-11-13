@@ -8,11 +8,11 @@
   -o-border-radius: 8px;
   -ms-border-radius: 8px;
   border-radius: 8px;
-  -webkit-box-shadow: 0 0 10px #000;
-  -moz-box-shadow: 0 0 10px #000;
-  -o-box-shadow: 0 0 10px #000;
-  -ms-box-shadow: 0 0 10px #000;
-  box-shadow: 0 0 10px #000;
+  -webkit-box-shadow: 0 0 10px #333;
+  -moz-box-shadow: 0 0 10px #333;
+  -o-box-shadow: 0 0 10px #333;
+  -ms-box-shadow: 0 0 10px #333;
+  box-shadow: 0 0 10px #333;
 }
 
 .modal a.close-modal {

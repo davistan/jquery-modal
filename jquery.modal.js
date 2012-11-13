@@ -1,6 +1,6 @@
 /*
     A simple jQuery modal (http://github.com/kylefox/jquery-modal)
-    Version 0.5.1
+    Davis Tan's Fork version 0.5.2
 */
 (function($) {
 
@@ -49,11 +49,29 @@
     open: function() {
       this.block();
       this.show();
-      if (this.options.escapeClose) {
-        $(document).on('keydown.modal', function(event) {
-          if (event.which == 27) $.modal.close();
-        });
-      }
+      var els = $(':input:enabled:visible', this.$elm);
+      if(els.length > 0) els[0].focus();
+      $(document).on('keydown.modal', this.options, function(event) {
+        if (event.which == 27 && event.data.escapeClose) $.modal.close();
+        if (event.which == 9) 
+        {
+          var fwd = !event.shiftKey && event.target === els[els.length-1];
+          var back = event.shiftKey && event.target === els[0];
+          if (fwd || back) {
+            setTimeout(function(){ //cycle the focus within
+              if (!els) return;
+              var e = els[back===true ? els.length-1 : 0];
+              if (e) e.focus();
+            }, 10);
+
+            return false;
+          }
+
+          var target = $(event.target);
+          // allow events for content that is not being blocked
+          return (target.parents().filter('.modal, .current').length > 0);
+        }
+      });
       if (this.options.clickClose) this.blocker.click($.modal.close);
     },
 
@@ -88,7 +106,7 @@
         this.$elm.append(this.closeButton);
       }
       this.$elm.addClass(this.options.modalClass + ' current');
-      this.center();
+      this.center(true);
       this.$elm.show().trigger($.modal.OPEN, [this._ctx()]);
     },
 
@@ -111,15 +129,20 @@
       if (this.spinner) this.spinner.remove();
     },
 
-    center: function() {
-      this.$elm.css({
+    center: function(initial) {
+      initial = initial || false;
+      var css = {
         position: 'fixed',
         top: "50%",
         left: "50%",
         marginTop: - (this.$elm.outerHeight() / 2),
         marginLeft: - (this.$elm.outerWidth() / 2),
         zIndex: this.options.zIndex + 1
-      });
+      };
+      if($.support.transition && !initial)
+        this.$elm.transition(css, 300);
+      else
+        this.$elm.css(css);
     },
 
     //Return context for custom events
@@ -145,7 +168,7 @@
 
   $.modal.defaults = {
     overlay: "#000",
-    opacity: 0.75,
+    opacity: 0.6,
     zIndex: 1,
     escapeClose: true,
     clickClose: true,
